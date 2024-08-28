@@ -1,0 +1,2 @@
+# kvadratNikitosa
+Полностью моя версия
