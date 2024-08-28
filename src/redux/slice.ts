@@ -1,0 +1,105 @@
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import {
+	DEFAULT_X,
+	DEFAULT_Y,
+	UNDO_SIZE,
+	PALETTE2,
+	EBrushType,
+	PENCIL,
+	CHAT_SIZE,
+} from '../utils/constants';
+import { Chat, ChatMessage, Grid, History, Ids, Pixel } from '../utils/types';
+import { createGrid } from '../utils/utils';
+
+export interface MainState {
+	grid: Grid;
+	selectedColor: string;
+	brushType: EBrushType;
+	history: History;
+	chat: Chat;
+}
+
+const initialState: MainState = {
+	grid: createGrid(DEFAULT_X * DEFAULT_Y),
+	selectedColor: PALETTE2[2],
+	brushType: PENCIL,
+	history: [],
+	chat: [],
+};
+
+// export const getChat =
+// 	(chat: Chat): AppThunk =>
+// 	async (dispatch) => {
+// 		dispatch(setPixels(pixels));
+// 	};
+
+export const mainSlice = createSlice({
+	name: 'main',
+	initialState,
+	reducers: {
+		setPixels: (state, action: PayloadAction<Pixel[]>) => {
+			for (const pixel of action.payload) {
+				const { id, color } = pixel;
+				state.grid[id] = color;
+			}
+		},
+
+		pushHistory: (state, action: PayloadAction<Ids>) => {
+			const ids = action.payload;
+			const historyElement = ids.map((id) => ({ id, color: state.grid[id] }));
+			state.history.push(historyElement);
+			if (state.history.length > UNDO_SIZE) {
+				state.history.shift();
+			}
+		},
+
+		setSelectedColor: (state, action: PayloadAction<string>) => {
+			state.selectedColor = action.payload;
+		},
+
+		popHistory: (state) => {
+			state.history.pop();
+		},
+
+		setGrid: (state, action: PayloadAction<Grid>) => {
+			const gridFromServer = action.payload;
+			state.grid = gridFromServer;
+		},
+
+		changeBrushType: (state, action: PayloadAction<EBrushType>) => {
+			state.brushType = action.payload;
+		},
+
+		setChat: (state, action: PayloadAction<Chat>) => {
+			state.chat = action.payload;
+		},
+
+		addMessage: (state, action: PayloadAction<ChatMessage>) => {
+			if (state.chat.length > CHAT_SIZE) {
+				state.chat.shift();
+			}
+
+			state.chat.push(action.payload);
+		},
+	},
+});
+
+export const selectSelectedColor = (state: MainState) => state.selectedColor;
+export const selectGrid = (state: MainState) => state.grid;
+export const selectPixelColor = (id: number) => (state: MainState) => state.grid[id];
+export const selectEmptyHistory = (state: MainState) => state.history.length === 0;
+export const selectBrushType = (state: MainState) => state.brushType;
+export const selectChat = (state: MainState) => state.chat;
+
+export const {
+	setPixels,
+	setSelectedColor,
+	pushHistory,
+	popHistory,
+	setGrid,
+	changeBrushType,
+	setChat,
+	addMessage,
+} = mainSlice.actions;
+
+export const mainReducer = mainSlice.reducer;
