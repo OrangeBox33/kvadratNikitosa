@@ -10,7 +10,7 @@ export type TColor = string;
 export type TGrid = string[];
 export type TGridForArduino = number[];
 
-export type TArduinoClient = { ws: WebSocket; isAlive: boolean };
+export type TArduinoClient = { ws: WebSocket; isAlive: boolean; chipId?: string; name?: string };
 
 export type TPixel = {
 	id: TId;
@@ -25,4 +25,11 @@ export type TChatMessage = { username: string; text: string };
 
 export type TChat = TChatMessage[];
 
-export type TDataFromClient = { type: EMessageTypes; pixels: TPixel[]; chatMessage: TChatMessage };
+export type TDataFromClient = {
+	type: EMessageTypes;
+	pixels: TPixel[];
+	chatMessage: TChatMessage;
+	ssid: string;
+	password: string;
+	pathname: string;
+};

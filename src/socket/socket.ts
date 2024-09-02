@@ -1,5 +1,5 @@
-import { addMessage, setChat, setGrid, setPixels } from './redux/slice';
-import { store } from './redux/store';
+import { addMessage, setChat, setGrid, setPixels } from '../redux/slice';
+import { store } from '../redux/store';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
 export const socket = new ReconnectingWebSocket('wss://kvadratnikitosa.ru');

@@ -17,3 +17,11 @@ export const KEYS_OPTIONS = {
 	key: fs.readFileSync('./ssl/privateKey.key'), // PRIVATE KEY
 	cert: fs.readFileSync('./ssl/cerfKey.pem'), // CERTIFICATE
 };
+
+export const NAME_TO_CHIP = {
+	safe: '344A529EF0C8',
+};
+
+export const CHIP_TO_NAME = {
+	'344A529EF0C8': 'safe',
+};

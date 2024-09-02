@@ -1,4 +1,4 @@
-import { socket } from '../socket';
+import { socket } from '../socket/socket';
 import { BRUSH, PENCIL } from '../utils/constants';
 import { Id, ChatMessage } from '../utils/types';
 import { needPaintPixels } from '../utils/utils';

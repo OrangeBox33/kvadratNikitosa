@@ -3,6 +3,7 @@ export enum EMessageTypes {
 	DRAW = 'draw',
 	GET_CHAT = 'getChat',
 	SEND_TO_CHAT = 'sendToChat',
+	WIFI = 'wifi',
 }
 
 export enum EArduinoActions {

@@ -9,7 +9,7 @@ const Dotenv = require('dotenv-webpack');
 module.exports = {
 	entry: {
 		index: './src/index.tsx',
-		// wifi: './src/wifi.tsx',
+		wifi: './src/wifi.tsx',
 	},
 	output: {
 		filename: '[name].[contenthash].js',
@@ -55,8 +55,15 @@ module.exports = {
 	},
 	plugins: [
 		new HtmlWebpackPlugin({
+			filename: 'index.html',
 			template: './public/index.html',
+			chunks: ['index'],
 			// favicon: './public/favicon.ico',
+		}),
+		new HtmlWebpackPlugin({
+			filename: 'wifi.html',
+			template: './public/wifi.html',
+			chunks: ['wifi'],
 		}),
 		new MiniCssExtractPlugin({
 			filename: '[name].[contenthash].css',
@@ -72,7 +79,12 @@ module.exports = {
 	],
 	devServer: {
 		static: path.resolve(__dirname, 'dist'),
-		historyApiFallback: true,
+		historyApiFallback: {
+			rewrites: [
+				{ from: /^\/$/, to: '/index.html' },
+				{ from: /^\/wifi$/, to: '/wifi.html' },
+			],
+		},
 		hot: true,
 		open: true,
 		port: 3000,

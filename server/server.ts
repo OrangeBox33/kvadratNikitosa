@@ -16,6 +16,8 @@ import {
 	PLAY_HISTORY,
 	RESET_HISTORY,
 	TIMEOUT_BETWEEN_FRAMES,
+	CHIP_TO_NAME,
+	NAME_TO_CHIP,
 } from './constants.js';
 import {
 	createGrid,
@@ -25,6 +27,7 @@ import {
 	makeAndSendPixelsToArduino,
 } from './helpers.js';
 import { TArduinoClient, TChat, TDataFromClient, THistory } from './types.js';
+import { EMessageTypes } from './enums.js';
 
 const app = express();
 
@@ -39,6 +42,18 @@ app.use(
 		extended: true,
 	})
 );
+
+// Отдаем index.html на роуте '/'
+app.get('/', (req, res) => {
+	res.sendFile(path.resolve(__dirname, './public/index.html'));
+});
+
+// Отдаем wifi.html на роуте '/wifi/'
+for (const espName in NAME_TO_CHIP) {
+	app.get(`/wifi/${espName}`, (req, res) => {
+		res.sendFile(path.resolve(__dirname, './public/wifi.html'));
+	});
+}
 
 const server = https.createServer(KEYS_OPTIONS, app);
 const server2 = http.createServer(app);
@@ -75,10 +90,22 @@ wsServer.on('connection', onConnectArduino);
 function onConnectArduino(ws: WebSocket) {
 	console.log('Arduino login');
 
-	const arduinoClient = { ws, isAlive: true };
+	const arduinoClient: TArduinoClient = { ws, isAlive: true };
 	arduinoClients.add(arduinoClient);
 
 	makeAndSendGridToOneArduino(grid, arduinoClient);
+
+	arduinoClient.ws.on('message', function (message) {
+		console.log(message);
+		console.log(typeof message);
+		if (typeof message === 'string') {
+			if (CHIP_TO_NAME[message]) {
+				console.log('всё ок, присваиваим имя и чип');
+				arduinoClient.chipId = message;
+				arduinoClient.name = CHIP_TO_NAME[message];
+			}
+		}
+	});
 
 	arduinoClient.ws.on('close', function () {
 		console.log('Arduino closed');
@@ -129,21 +156,36 @@ function onConnect(ws: WebSocket) {
 			return;
 		}
 
-		const { type, pixels, chatMessage }: TDataFromClient = JSON.parse(message);
+		const { type, pixels, chatMessage, ssid, password, pathname }: TDataFromClient =
+			JSON.parse(message);
 
-		if (type === 'getGrid') {
+		if (type === EMessageTypes.GET_GRID) {
 			ws.send(JSON.stringify({ type: 'getGrid', grid }));
 
 			return;
 		}
 
-		if (type === 'getChat') {
+		if (type === EMessageTypes.GET_CHAT) {
 			ws.send(JSON.stringify({ type, chat }));
 
 			return;
 		}
 
-		if (type === 'draw') {
+		if (type === EMessageTypes.WIFI) {
+			if (ssid && password && pathname) {
+				const espName = pathname.split('/')[1];
+
+				if (NAME_TO_CHIP[espName]) {
+					arduinoClients.forEach((arduinoClient) => {
+						if (arduinoClient.name === espName) {
+							arduinoClient.ws.send(JSON.stringify(`${ssid}:${password}`));
+						}
+					});
+				}
+			}
+		}
+
+		if (type === EMessageTypes.DRAW) {
 			// Работа с историей
 			if (notFirstCycle) {
 				const historyPixels = history[historyIndex];
@@ -184,7 +226,7 @@ function onConnect(ws: WebSocket) {
 			return;
 		}
 
-		if (type === 'sendToChat') {
+		if (type === EMessageTypes.SEND_TO_CHAT) {
 			const { username, text } = chatMessage;
 
 			if (text) {
