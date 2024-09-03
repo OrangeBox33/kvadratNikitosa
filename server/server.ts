@@ -96,14 +96,12 @@ function onConnectArduino(ws: WebSocket) {
 	makeAndSendGridToOneArduino(grid, arduinoClient);
 
 	arduinoClient.ws.on('message', function (message) {
-		console.log(message);
-		console.log(typeof message);
-		if (typeof message === 'string') {
-			if (CHIP_TO_NAME[message]) {
-				console.log('всё ок, присваиваим имя и чип');
-				arduinoClient.chipId = message;
-				arduinoClient.name = CHIP_TO_NAME[message];
-			}
+		const messageString = message.toString();
+		if (messageString in CHIP_TO_NAME) {
+			const espName = CHIP_TO_NAME[messageString as keyof typeof CHIP_TO_NAME];
+			console.log('всё ок, присваиваим имя и чип');
+			arduinoClient.chipId = messageString;
+			arduinoClient.name = espName;
 		}
 	});
 
@@ -129,6 +127,7 @@ function onConnectArduino(ws: WebSocket) {
 		}
 	});
 
+	// todo чтобы было не бесконечно
 	setInterval(() => {
 		if (arduinoClient.ws) {
 			if (!arduinoClient.isAlive) {
@@ -152,12 +151,9 @@ function onConnect(ws: WebSocket) {
 	ws.send(JSON.stringify({ type: 'getChat', chat }));
 
 	ws.on('message', async function (message) {
-		if (typeof message !== 'string') {
-			return;
-		}
-
-		const { type, pixels, chatMessage, ssid, password, pathname }: TDataFromClient =
-			JSON.parse(message);
+		const { type, pixels, chatMessage, ssid, password, pathname }: TDataFromClient = JSON.parse(
+			message.toString()
+		);
 
 		if (type === EMessageTypes.GET_GRID) {
 			ws.send(JSON.stringify({ type: 'getGrid', grid }));
@@ -173,9 +169,9 @@ function onConnect(ws: WebSocket) {
 
 		if (type === EMessageTypes.WIFI) {
 			if (ssid && password && pathname) {
-				const espName = pathname.split('/')[1];
+				const espName = pathname.split('/')[2];
 
-				if (NAME_TO_CHIP[espName]) {
+				if (espName in NAME_TO_CHIP) {
 					arduinoClients.forEach((arduinoClient) => {
 						if (arduinoClient.name === espName) {
 							arduinoClient.ws.send(JSON.stringify(`${ssid}:${password}`));
@@ -293,7 +289,14 @@ console.log('Сервер запущен на 80 порту');
 setInterval(() => {
 	fs.writeFileSync(
 		'save.json',
-		JSON.stringify({ grid, oldGrid, history, historyIndex, notFirstCycle, chat }),
+		JSON.stringify({
+			grid,
+			oldGrid,
+			history,
+			historyIndex,
+			notFirstCycle,
+			chat,
+		}),
 		'utf-8'
 	);
 }, 60000);

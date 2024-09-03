@@ -1,5 +1,5 @@
 import WebSocket from 'ws';
-import { EMessageTypes } from './enums';
+import { EMessageTypes } from './enums.js';
 
 export type TArduinoClients = Set<TArduinoClient>;
 

@@ -1,5 +1,7 @@
 /ssl
 /dist
+/server/dist
+
 
 # dependencies
 /node_modules
