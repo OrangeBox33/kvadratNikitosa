@@ -30,13 +30,10 @@ import { TArduinoClient, TChat, TDataFromClient, THistory } from './types.js';
 import { EMessageTypes } from './enums.js';
 
 const app = express();
-
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
 app.use(express.static(path.resolve(__dirname, './public')));
-
 app.use(express.json());
-
 app.use(
 	bodyParser.urlencoded({
 		extended: true,
@@ -112,7 +109,7 @@ function onConnectArduino(ws: WebSocket) {
 	});
 
 	arduinoClient.ws.on('ping', function () {
-		console.log('arduino ping');
+		console.log('arduino send me ping');
 
 		if (arduinoClient.ws) {
 			arduinoClient.ws.pong();
@@ -120,7 +117,7 @@ function onConnectArduino(ws: WebSocket) {
 	});
 
 	arduinoClient.ws.on('pong', function () {
-		console.log('arduino pong');
+		console.log('arduino send me pong');
 
 		if (arduinoClient.ws) {
 			arduinoClient.isAlive = true;
@@ -129,7 +126,9 @@ function onConnectArduino(ws: WebSocket) {
 
 	// todo чтобы было не бесконечно
 	setInterval(() => {
+		console.log('запускаем интервал');
 		if (arduinoClient.ws) {
+			console.log('существует arduinoClient.ws');
 			if (!arduinoClient.isAlive) {
 				console.log('Arduino соединение прервано');
 				arduinoClient.ws.terminate();
@@ -138,6 +137,7 @@ function onConnectArduino(ws: WebSocket) {
 				return;
 			}
 
+			console.log('Отправляем пинг и ждём понга');
 			arduinoClient.isAlive = false;
 			arduinoClient.ws.ping();
 		}

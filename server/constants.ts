@@ -12,6 +12,7 @@ export const PLAY_HISTORY = '42';
 export const RESET_HISTORY = '228';
 export const BRIGHTNESS_DEVISION = 4;
 export const TIMEOUT_BETWEEN_FRAMES = 25; // ms
+// export const CHUNK_SIZE = 16 * 1024;
 
 export const KEYS_OPTIONS = {
 	key: fs.readFileSync('./ssl/privateKey.key'), // PRIVATE KEY

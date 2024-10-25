@@ -3,13 +3,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const ESLintPlugin = require('eslint-webpack-plugin');
 const Dotenv = require('dotenv-webpack');
 
 module.exports = {
 	entry: {
 		index: './src/index.tsx',
 		wifi: './src/wifi.tsx',
+		update: './src/update.tsx',
 	},
 	output: {
 		filename: '[name].[contenthash].js',
@@ -65,6 +65,11 @@ module.exports = {
 			template: './public/wifi.html',
 			chunks: ['wifi'],
 		}),
+		new HtmlWebpackPlugin({
+			filename: 'update.html',
+			template: './public/update.html',
+			chunks: ['update'],
+		}),
 		new MiniCssExtractPlugin({
 			filename: '[name].[contenthash].css',
 		}),
@@ -72,9 +77,6 @@ module.exports = {
 		new ForkTsCheckerWebpackPlugin({
 			async: false,
 		}),
-		// new ESLintPlugin({
-		// 	extensions: ['ts', 'tsx', 'js', 'jsx'],
-		// }),
 		new Dotenv(),
 	],
 	devServer: {
@@ -83,6 +85,7 @@ module.exports = {
 			rewrites: [
 				{ from: /^\/$/, to: '/index.html' },
 				{ from: /^\/wifi$/, to: '/wifi.html' },
+				{ from: /^\/update$/, to: '/update.html' },
 			],
 		},
 		hot: true,
