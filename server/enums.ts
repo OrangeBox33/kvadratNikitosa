@@ -11,4 +11,5 @@ export enum EArduinoActions {
 	GRID = 1,
 	DRAW = 2,
 	HISTORY = 3,
+	HISTORY_SPLIT = 255,
 }

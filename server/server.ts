@@ -233,7 +233,8 @@ function onConnect(ws: WebSocket) {
 						history,
 						historyIndex,
 						notFirstCycle,
-						arduinoClients
+						arduinoClients,
+						oldGrid
 					);
 
 					setTimeout(() => {

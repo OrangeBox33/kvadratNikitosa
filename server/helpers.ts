@@ -59,18 +59,14 @@ const makeGridForArduino = (grid: TGrid, action?: EArduinoActions) => {
 		const rgbArr256 = hexToRgb(grid[id]);
 		const rgbArr32 = rgbArr256.map((value) => Math.floor(value / BRIGHTNESS_DEVISION));
 
-		gridForArduino.push(convertIdForArduino(id), ...rgbArr32);
+		gridForArduino.push(...rgbArr32, convertIdForArduino(id));
 	}
 
 	return gridForArduino;
 };
 
-export const makePixelsForArduino = (pixels: TPixel[], action?: EArduinoActions) => {
-	const pixelsForArduino: TGridForArduino = [];
-
-	if (typeof action === 'number') {
-		pixelsForArduino.push(action);
-	}
+export const makePixelsForArduino = (pixels: TPixel[], action: EArduinoActions) => {
+	const pixelsForArduino: TGridForArduino = [action];
 
 	for (const pixel of pixels) {
 		const { id, color } = pixel;
@@ -78,7 +74,7 @@ export const makePixelsForArduino = (pixels: TPixel[], action?: EArduinoActions)
 		const rgbArr256 = hexToRgb(color);
 		const rgbArr32 = rgbArr256.map((value) => Math.floor(value / BRIGHTNESS_DEVISION));
 
-		pixelsForArduino.push(convertIdForArduino(id), ...rgbArr32);
+		pixelsForArduino.push(...rgbArr32, convertIdForArduino(id));
 	}
 
 	return pixelsForArduino;
@@ -110,19 +106,24 @@ export const makeAndSendHistoryToArduino = (
 	history: THistory,
 	historyIndex: number,
 	notFirstCycle: boolean,
-	arduinoClients: TArduinoClients
+	arduinoClients: TArduinoClients,
+	oldGrid: TGrid
 ) => {
-	const historyForArduino: TGridForArduino = [];
+	makeAndSendGridToArduino(oldGrid, arduinoClients);
+
+	const historyForArduino: TGridForArduino = [EArduinoActions.HISTORY];
 
 	// Собираем историю изменений в один массив
 	if (notFirstCycle) {
 		for (let i = historyIndex; i < HISTORY_SIZE; i++) {
-			historyForArduino.push(...makePixelsForArduino(history[i], EArduinoActions.HISTORY));
+			historyForArduino.push(
+				...makePixelsForArduino(history[i], EArduinoActions.HISTORY_SPLIT)
+			);
 		}
 	}
 
 	for (let i = 0; i < historyIndex; i++) {
-		historyForArduino.push(...makePixelsForArduino(history[i], EArduinoActions.HISTORY));
+		historyForArduino.push(...makePixelsForArduino(history[i], EArduinoActions.HISTORY_SPLIT));
 	}
 
 	arduinoClients.forEach((arduinoClient) => {
