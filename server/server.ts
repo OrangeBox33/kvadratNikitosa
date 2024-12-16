@@ -2,13 +2,11 @@ import path from 'path';
 import express from 'express';
 import bodyParser from 'body-parser';
 import http from 'http';
-import https from 'https';
 import WebSocket, { WebSocketServer } from 'ws';
 import fs from 'fs';
 import { dirname } from 'path';
 import { fileURLToPath } from 'url';
 import {
-	KEYS_OPTIONS,
 	HISTORY_SIZE,
 	CHAT_SIZE,
 	CHAT_MESSAGE_SIZE,
@@ -52,11 +50,8 @@ for (const espName in NAME_TO_CHIP) {
 	});
 }
 
-const server = https.createServer(KEYS_OPTIONS, app);
-const server2 = http.createServer(app);
-
-server.listen(443);
-server2.listen(80);
+const server = http.createServer(app);
+server.listen(3500);
 
 let grid = createGrid();
 let oldGrid = createGrid();
