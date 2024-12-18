@@ -29,8 +29,13 @@ export const Wifi: FC = () => {
 				Введи название сети и пароль и нажми кнопку OK, устройство перезагрузится и применит
 				данные
 			</p>
-			<StyledInput value={ssid} placeholder="SSID" onChange={changeSsid} />
-			<StyledInput value={password} placeholder="Password" onChange={changePassword} />
+			<StyledInput value={ssid} placeholder="SSID" onChange={changeSsid} spellCheck={false} />
+			<StyledInput
+				value={password}
+				placeholder="Password"
+				onChange={changePassword}
+				spellCheck={false}
+			/>
 			<StyledButton disabled={!ssid || !password} onClick={sendData}>
 				OK
 			</StyledButton>
