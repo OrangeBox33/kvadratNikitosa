@@ -1,16 +1,17 @@
 {
 	"compilerOptions": {
-		"target": "es6",
-		"module": "esnext",
-		"lib": ["dom", "dom.iterable", "esnext"],
+		"target": "ES2020",
+		"module": "ESNext",
+		"lib": ["ES2020", "DOM", "DOM.Iterable"],
 		"strict": true,
 		"jsx": "react-jsx",
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"isolatedModules": true,
-		"moduleResolution": "node"
+		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+		"noEmit": true
 	},
-	"include": ["src/**/*"],
-	"exclude": ["node_modules"]
+	"include": ["src", "shared", "vite.config.ts"]
 }

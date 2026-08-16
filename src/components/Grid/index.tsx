@@ -6,6 +6,7 @@ import { StyledGrid } from './Grid.styled';
 import { useAppDispatch } from '../../redux/hooks';
 import { DeviceType } from '../../utils/types';
 import { setAndSendPixel } from '../../redux/thunk';
+import { beginStroke } from '../../redux/slice';
 
 interface IProps {
 	deviceType: DeviceType;
@@ -37,8 +38,13 @@ export const Grid: FC<IProps> = ({ deviceType }) => {
 		}
 	};
 
+	const touchStart = (e: React.TouchEvent) => {
+		dispatch(beginStroke());
+		touchMove(e);
+	};
+
 	return (
-		<StyledGrid ref={ref} onTouchStart={touchMove} onTouchMove={touchMove}>
+		<StyledGrid ref={ref} onTouchStart={touchStart} onTouchMove={touchMove}>
 			{createArr(DEFAULT_X * DEFAULT_Y).map((v, index) => (
 				<Pixel key={index} id={index} deviceType={deviceType} />
 			))}

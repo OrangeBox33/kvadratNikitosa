@@ -1,42 +1,27 @@
-import React, { ChangeEvent, FC, useState } from 'react';
+import React, { FC } from 'react';
+import { socketUpdate } from '../../socket/socketUpdate';
+import { EMessageTypes } from '../../../shared/enums';
 
 export const Update: FC = () => {
-	const [file, setFile] = useState<File>();
+	const sendData = () => {
+		socketUpdate.send(
+			JSON.stringify({
+				type: EMessageTypes.OTA,
+				pathname: window.location.pathname,
+			})
+		);
 
-	const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-		if (event.target.files && event.target.files.length > 0) {
-			setFile(event.target.files[0]);
-		}
-	};
-
-	const handleUpload = async () => {
-		if (file) {
-			const formData = new FormData();
-			formData.append('file', file);
-
-			try {
-				const response = await fetch('https://kvadratnikitosa.ru/upload', {
-					method: 'POST',
-					body: formData,
-				});
-
-				if (response.ok) {
-					console.log('File uploaded successfully');
-				} else {
-					console.error('File upload failed', response.statusText);
-				}
-			} catch (error) {
-				console.error('Error uploading file', error);
-			}
-		}
+		window.location.href = '/';
 	};
 
 	return (
 		<div>
-			<input type="file" accept=".bin" onChange={handleFileChange} />
-			<button onClick={handleUpload} disabled={!file}>
-				Upload!
-			</button>
+			<p>Обновление прошивки</p>
+			<p>
+				Нажми кнопку — панель сама скачает новую прошивку по http и перезагрузится. Заранее
+				положи собранный .bin туда, откуда его качает скетч.
+			</p>
+			<button onClick={sendData}>Обновить</button>
 		</div>
 	);
 };

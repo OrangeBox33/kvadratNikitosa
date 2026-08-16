@@ -1,29 +1,37 @@
 import WebSocket from 'ws';
 import { EMessageTypes } from './enums.js';
+import {
+	Id,
+	Ids,
+	Color,
+	Grid,
+	Pixel,
+	HistoryElement,
+	History,
+	ChatMessage,
+	Chat,
+} from '../shared/types.js';
 
 export type TArduinoClients = Set<TArduinoClient>;
 
-export type TId = number;
-export type TIds = TId[];
-export type TColor = string;
+export type TId = Id;
+export type TIds = Ids;
+export type TColor = Color;
 
-export type TGrid = string[];
+export type TGrid = Grid;
 export type TGridForArduino = number[];
 
 export type TArduinoClient = { ws: WebSocket; isAlive: boolean; chipId?: string; name?: string };
 
-export type TPixel = {
-	id: TId;
-	color: TColor;
-};
+export type TPixel = Pixel;
 
-export type THistoryElement = TPixel[];
+export type THistoryElement = HistoryElement;
 
-export type THistory = THistoryElement[];
+export type THistory = History;
 
-export type TChatMessage = { username: string; text: string };
+export type TChatMessage = ChatMessage;
 
-export type TChat = TChatMessage[];
+export type TChat = Chat;
 
 export type TDataFromClient = {
 	type: EMessageTypes;

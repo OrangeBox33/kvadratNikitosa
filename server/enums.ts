@@ -1,10 +1,4 @@
-export enum EMessageTypes {
-	GET_GRID = 'getGrid',
-	DRAW = 'draw',
-	GET_CHAT = 'getChat',
-	SEND_TO_CHAT = 'sendToChat',
-	WIFI = 'wifi',
-}
+export { EMessageTypes } from '../shared/enums.js';
 
 export enum EArduinoActions {
 	UPDATE = 0,

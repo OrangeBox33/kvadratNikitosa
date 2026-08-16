@@ -1,7 +1,8 @@
 import styled from 'styled-components';
 
 export const StyledMainContainer = styled.div`
-	height: 100vh;
+	height: 100vh; /* фолбэк для старых браузеров */
+	height: 100dvh; /* реальная видимая высота с учётом строки адреса */
 	background-color: #5b5d63;
 	display: flex;
 	justify-content: space-between;

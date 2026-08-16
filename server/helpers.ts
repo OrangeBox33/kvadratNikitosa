@@ -102,7 +102,7 @@ export const makeAndSendPixelsToArduino = (pixels: TPixel[], arduinoClients: TAr
 	});
 };
 
-export const makeAndSendHistoryToArduino = (
+export const makeAndSendHistoryToArduino = async (
 	history: THistory,
 	historyIndex: number,
 	notFirstCycle: boolean,
@@ -126,6 +126,7 @@ export const makeAndSendHistoryToArduino = (
 		historyForArduino.push(...makePixelsForArduino(history[i], EArduinoActions.HISTORY_SPLIT));
 	}
 
+	await sleep(1000);
 	arduinoClients.forEach((arduinoClient) => {
 		arduinoClient.ws.send(new Uint8Array(historyForArduino));
 	});

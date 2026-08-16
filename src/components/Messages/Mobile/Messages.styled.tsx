@@ -13,6 +13,8 @@ export const StyledContainer = styled.div`
 	gap: 10px;
 	overflow-y: scroll;
 	overflow-x: hidden;
+	/* скролл чата не «пробивается» на страницу */
+	overscroll-behavior: contain;
 `;
 
 export const StyledMessage = styled.div``;

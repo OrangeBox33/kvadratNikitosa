@@ -1,10 +1,9 @@
+export { DEFAULT_X, DEFAULT_Y, SIZE } from '../../shared/constants';
+
 export const DEFAULT_COLOR = '#303030';
-export const DEFAULT_X = 16;
-export const DEFAULT_Y = 16;
 export const PIXEL_SIZE = 20;
 export const PIXEL_GAP = 1;
 export const UNDO_SIZE = 100;
-export const SIZE = DEFAULT_X * DEFAULT_Y;
 export const CHAT_SIZE = 100;
 export const MAX_USERNAME = 16;
 export const MAX_CHAT_MESSAGE = 150;

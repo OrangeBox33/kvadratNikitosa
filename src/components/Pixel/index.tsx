@@ -2,7 +2,7 @@ import React from 'react';
 import { MouseEvent, memo } from 'react';
 import { StyledPixel } from './Pixel.styled';
 import { useAppDispatch, useAppSelector } from '../../redux/hooks';
-import { selectBrushType, selectPixelColor, selectSelectedColor } from '../../redux/slice';
+import { beginStroke, selectBrushType, selectPixelColor, selectSelectedColor } from '../../redux/slice';
 import { DeviceType } from '../../utils/types';
 import { PALETTE_DICTIONARY, PENCIL } from '../../utils/constants';
 import { setAndSendPixel } from '../../redux/thunk';
@@ -28,6 +28,7 @@ export const Pixel = memo<IProps>(({ id, deviceType }) => {
 	};
 
 	const handleMouseDown = () => {
+		dispatch(beginStroke());
 		if (brushType === PENCIL && pixelColor === selectedColor) {
 			return;
 		}

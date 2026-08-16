@@ -30,7 +30,7 @@ import { EMessageTypes } from './enums.js';
 const app = express();
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
-app.use(express.static(path.resolve(__dirname, './public')));
+app.use(express.static(path.resolve(__dirname, '../public')));
 app.use(express.json());
 app.use(
 	bodyParser.urlencoded({
@@ -40,13 +40,20 @@ app.use(
 
 // Отдаем index.html на роуте '/'
 app.get('/', (req, res) => {
-	res.sendFile(path.resolve(__dirname, './public/index.html'));
+	res.sendFile(path.resolve(__dirname, '../public/index.html'));
 });
 
 // Отдаем wifi.html на роуте '/wifi/'
 for (const espName in NAME_TO_CHIP) {
 	app.get(`/wifi/${espName}`, (req, res) => {
-		res.sendFile(path.resolve(__dirname, './public/wifi.html'));
+		res.sendFile(path.resolve(__dirname, '../public/wifi.html'));
+	});
+}
+
+// Отдаем update.html на роуте '/update/'
+for (const espName in NAME_TO_CHIP) {
+	app.get(`/update/${espName}`, (req, res) => {
+		res.sendFile(path.resolve(__dirname, '../public/update.html'));
 	});
 }
 
@@ -61,14 +68,34 @@ let notFirstCycle = false;
 let chat: TChat = [];
 let playingHistory = false;
 
-const data = fs.readFileSync('./save.json', 'utf-8');
-const parsedData = JSON.parse(data);
-grid = parsedData.grid;
-oldGrid = parsedData.oldGrid;
-history = parsedData.history;
-historyIndex = parsedData.historyIndex;
-notFirstCycle = parsedData.notFirstCycle;
-chat = parsedData.chat;
+const saveState = () => {
+	fs.writeFileSync(
+		'save.json',
+		JSON.stringify({
+			grid,
+			oldGrid,
+			history,
+			historyIndex,
+			notFirstCycle,
+			chat,
+		}),
+		'utf-8'
+	);
+};
+
+if (fs.existsSync('./save.json')) {
+	const data = fs.readFileSync('./save.json', 'utf-8');
+	const parsedData = JSON.parse(data);
+	grid = parsedData.grid;
+	oldGrid = parsedData.oldGrid;
+	history = parsedData.history;
+	historyIndex = parsedData.historyIndex;
+	notFirstCycle = parsedData.notFirstCycle;
+	chat = parsedData.chat;
+} else {
+	console.log('save.json не найден, создаём с начальным состоянием');
+	saveState();
+}
 
 const clients = new Set<WebSocket>();
 const arduinoClients = new Set<TArduinoClient>();
@@ -85,6 +112,8 @@ function onConnectArduino(ws: WebSocket) {
 	const arduinoClient: TArduinoClient = { ws, isAlive: true };
 	arduinoClients.add(arduinoClient);
 
+	let heartbeatInterval: NodeJS.Timeout;
+
 	makeAndSendGridToOneArduino(grid, arduinoClient);
 
 	arduinoClient.ws.on('message', function (message) {
@@ -100,6 +129,7 @@ function onConnectArduino(ws: WebSocket) {
 	arduinoClient.ws.on('close', function () {
 		console.log('Arduino closed');
 
+		clearInterval(heartbeatInterval);
 		arduinoClients.delete(arduinoClient);
 	});
 
@@ -119,13 +149,13 @@ function onConnectArduino(ws: WebSocket) {
 		}
 	});
 
-	// todo чтобы было не бесконечно
-	setInterval(() => {
+	heartbeatInterval = setInterval(() => {
 		console.log('запускаем интервал');
 		if (arduinoClient.ws) {
 			console.log('существует arduinoClient.ws');
 			if (!arduinoClient.isAlive) {
 				console.log('Arduino соединение прервано');
+				clearInterval(heartbeatInterval);
 				arduinoClient.ws.terminate();
 				arduinoClients.delete(arduinoClient);
 
@@ -176,6 +206,24 @@ function onConnect(ws: WebSocket) {
 			}
 		}
 
+		if (type === EMessageTypes.OTA) {
+			// Триггер OTA: шлём панели текстовую команду "OTA".
+			// Саму прошивку панель качает сама по http (httpUpdate в скетче).
+			if (pathname) {
+				const espName = pathname.split('/')[2];
+
+				if (espName in NAME_TO_CHIP) {
+					arduinoClients.forEach((arduinoClient) => {
+						if (arduinoClient.name === espName) {
+							arduinoClient.ws.send(JSON.stringify('OTA'));
+						}
+					});
+				}
+			}
+
+			return;
+		}
+
 		if (type === EMessageTypes.DRAW) {
 			// Работа с историей
 			if (notFirstCycle) {
@@ -224,7 +272,7 @@ function onConnect(ws: WebSocket) {
 				if (username === PLAY_HISTORY && text === PLAY_HISTORY) {
 					playingHistory = true;
 
-					makeAndSendHistoryToArduino(
+					await makeAndSendHistoryToArduino(
 						history,
 						historyIndex,
 						notFirstCycle,
@@ -282,17 +330,4 @@ function onConnect(ws: WebSocket) {
 
 console.log('Сервер запущен на 80 порту');
 
-setInterval(() => {
-	fs.writeFileSync(
-		'save.json',
-		JSON.stringify({
-			grid,
-			oldGrid,
-			history,
-			historyIndex,
-			notFirstCycle,
-			chat,
-		}),
-		'utf-8'
-	);
-}, 60000);
+setInterval(saveState, 60000);

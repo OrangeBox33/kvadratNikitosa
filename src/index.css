@@ -1,5 +1,9 @@
-html {
-	touch-action: none;
+html,
+body {
+	height: 100%;
+	/* страница сама не скроллится → строка адреса не прыгает, нет pull-to-refresh и bounce */
+	overflow: hidden;
+	overscroll-behavior: none;
 }
 
 body {

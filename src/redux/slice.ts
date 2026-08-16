@@ -16,6 +16,7 @@ export interface MainState {
 	selectedColor: string;
 	brushType: EBrushType;
 	history: History;
+	pendingNewStroke: boolean;
 	chat: Chat;
 }
 
@@ -24,6 +25,7 @@ const initialState: MainState = {
 	selectedColor: PALETTE2[2],
 	brushType: PENCIL,
 	history: [],
+	pendingNewStroke: true,
 	chat: [],
 };
 
@@ -44,12 +46,24 @@ export const mainSlice = createSlice({
 			}
 		},
 
+		beginStroke: (state) => {
+			state.pendingNewStroke = true;
+		},
+
 		pushHistory: (state, action: PayloadAction<Ids>) => {
 			const ids = action.payload;
 			const historyElement = ids.map((id) => ({ id, color: state.grid[id] }));
-			state.history.push(historyElement);
-			if (state.history.length > UNDO_SIZE) {
-				state.history.shift();
+
+			// Начало мазка (или самый первый штрих) — заводим новую группу отмены.
+			// Продолжение мазка — дописываем пиксели в текущую группу.
+			if (state.pendingNewStroke || state.history.length === 0) {
+				state.history.push(historyElement);
+				state.pendingNewStroke = false;
+				if (state.history.length > UNDO_SIZE) {
+					state.history.shift();
+				}
+			} else {
+				state.history[state.history.length - 1].push(...historyElement);
 			}
 		},
 
@@ -94,6 +108,7 @@ export const selectChat = (state: MainState) => state.chat;
 export const {
 	setPixels,
 	setSelectedColor,
+	beginStroke,
 	pushHistory,
 	popHistory,
 	setGrid,

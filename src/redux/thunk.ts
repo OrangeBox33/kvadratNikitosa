@@ -1,42 +1,32 @@
 import { socket } from '../socket/socket';
-import { BRUSH, PENCIL } from '../utils/constants';
+import { BRUSH } from '../utils/constants';
 import { Id, ChatMessage } from '../utils/types';
 import { needPaintPixels } from '../utils/utils';
 import { pushHistory, setPixels, popHistory } from './slice';
 import { AppThunk } from './store';
+import { EMessageTypes } from '../../shared/enums';
 
 export const setAndSendPixel =
 	(id: Id): AppThunk =>
 	async (dispatch, getState) => {
 		const { selectedColor, brushType, grid } = getState();
-		if (brushType === BRUSH) {
-			const allNeedPaintIds = needPaintPixels(id);
 
-			const realNeedPaintIds = allNeedPaintIds.filter((id) => grid[id] !== selectedColor);
+		// Кисть красит окрестность 3×3, карандаш — один пиксель.
+		// В обоих случаях берём только те id, что реально меняют цвет.
+		const candidateIds = brushType === BRUSH ? needPaintPixels(id) : [id];
+		const idsToPaint = candidateIds.filter((pixelId) => grid[pixelId] !== selectedColor);
 
-			if (realNeedPaintIds.length) {
-				const pixels = realNeedPaintIds.map((id) => ({ id, color: selectedColor }));
-
-				dispatch(pushHistory(realNeedPaintIds));
-				dispatch(setPixels(pixels));
-
-				if (socket.readyState === socket.OPEN) {
-					const data = JSON.stringify({ pixels, type: 'draw' });
-					await socket.send(data);
-				}
-			}
+		if (!idsToPaint.length) {
+			return;
 		}
 
-		if (brushType === PENCIL) {
-			const pixels = [{ id, color: selectedColor }];
+		const pixels = idsToPaint.map((pixelId) => ({ id: pixelId, color: selectedColor }));
 
-			dispatch(pushHistory([id]));
-			dispatch(setPixels(pixels));
+		dispatch(pushHistory(idsToPaint));
+		dispatch(setPixels(pixels));
 
-			if (socket.readyState === socket.OPEN) {
-				const data = JSON.stringify({ pixels, type: 'draw' });
-				await socket.send(data);
-			}
+		if (socket.readyState === socket.OPEN) {
+			socket.send(JSON.stringify({ pixels, type: EMessageTypes.DRAW }));
 		}
 	};
 
@@ -44,11 +34,15 @@ export const undo = (): AppThunk => async (dispatch, getState) => {
 	const { history } = getState();
 	const pixels = history.at(-1);
 
-	dispatch(setPixels(pixels!));
+	if (!pixels) {
+		return;
+	}
+
+	dispatch(setPixels(pixels));
 	dispatch(popHistory());
 
 	if (socket.readyState === socket.OPEN) {
-		const data = JSON.stringify({ pixels, type: 'draw' });
+		const data = JSON.stringify({ pixels, type: EMessageTypes.DRAW });
 		await socket.send(data);
 	}
 };
@@ -56,6 +50,9 @@ export const undo = (): AppThunk => async (dispatch, getState) => {
 export const sendMessage =
 	({ username, text }: ChatMessage): AppThunk =>
 	async () => {
-		const data = JSON.stringify({ type: 'sendToChat', chatMessage: { username, text } });
+		const data = JSON.stringify({
+			type: EMessageTypes.SEND_TO_CHAT,
+			chatMessage: { username, text },
+		});
 		socket.send(data);
 	};

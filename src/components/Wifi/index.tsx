@@ -1,6 +1,7 @@
 import React, { FC, useState } from 'react';
 import { StyledButton, StyledContainer, StyledInput } from './styled';
 import { socketWifi } from '../../socket/socketWifi';
+import { EMessageTypes } from '../../../shared/enums';
 
 export const Wifi: FC = () => {
 	const [ssid, setSsid] = useState('');
@@ -16,7 +17,12 @@ export const Wifi: FC = () => {
 
 	const sendData = () => {
 		socketWifi.send(
-			JSON.stringify({ type: 'wifi', ssid, password, pathname: window.location.pathname })
+			JSON.stringify({
+				type: EMessageTypes.WIFI,
+				ssid,
+				password,
+				pathname: window.location.pathname,
+			})
 		);
 
 		window.location.href = '/';

@@ -1,8 +1,7 @@
+export { DEFAULT_X, DEFAULT_Y, SIZE } from '../shared/constants.js';
+
 export const DEFAULT_COLOR = '#000000';
-export const DEFAULT_X = 16;
-export const DEFAULT_Y = 16;
-export const SIZE = DEFAULT_X * DEFAULT_Y;
-export const HISTORY_SIZE = 500;
+export const HISTORY_SIZE = 400;
 export const CHAT_SIZE = 5;
 export const CHAT_MESSAGE_SIZE = 150;
 export const CHAT_USERNAME_SIZE = 16;
