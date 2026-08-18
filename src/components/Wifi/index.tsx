@@ -42,7 +42,7 @@ export const Wifi: FC = () => {
 				onChange={changePassword}
 				spellCheck={false}
 			/>
-			<StyledButton disabled={!ssid || !password} onClick={sendData}>
+			<StyledButton type="button" disabled={!ssid || !password} onClick={sendData}>
 				OK
 			</StyledButton>
 		</StyledContainer>

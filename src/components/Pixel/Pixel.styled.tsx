@@ -1,8 +1,7 @@
 import styled from 'styled-components';
-import { PIXEL_SIZE } from '../../utils/constants';
 
-export const StyledPixel = styled.div<{ color: string }>`
-	height: ${PIXEL_SIZE}px;
-	width: ${PIXEL_SIZE}px;
-	background-color: ${({ color }) => color};
+// Размера нет намеренно: ячейка получает его от трека грида (1fr),
+// поэтому сетка масштабируется целиком, без пересчёта пикселя.
+export const StyledPixel = styled.div<{ $color: string }>`
+	background-color: ${({ $color }) => $color};
 `;

@@ -1,6 +1,6 @@
-import React, { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useRef } from 'react';
 import { createArr } from '../../utils/utils';
-import { DEFAULT_X, DEFAULT_Y, PIXEL_GAP, PIXEL_SIZE } from '../../utils/constants';
+import { DEFAULT_X, DEFAULT_Y } from '../../utils/constants';
 import { Pixel } from '../Pixel';
 import { StyledGrid } from './Grid.styled';
 import { useAppDispatch } from '../../redux/hooks';
@@ -14,27 +14,22 @@ interface IProps {
 
 export const Grid: FC<IProps> = ({ deviceType }) => {
 	const dispatch = useAppDispatch();
-	const [offset, setOffset] = useState({ x: 0, y: 0 });
 	const ref = useRef<HTMLDivElement>(null);
 
-	useEffect(() => {
-		if (ref.current) {
-			const { left, top } = ref.current.getBoundingClientRect();
-			setOffset({ x: left, y: top });
-		}
-	}, [ref]);
-
+	// Размер и положение сетки меряем на каждое касание, а не один раз при
+	// монтировании: сетка теперь резиновая, и раньше после поворота экрана
+	// или скролла попадание уезжало на несколько клеток.
 	const touchMove = (e: React.TouchEvent) => {
-		const x = e.touches[0].clientX - offset.x;
-		const y = e.touches[0].clientY - offset.y;
+		if (!ref.current) {
+			return;
+		}
 
-		const posX = Math.floor(x / (PIXEL_SIZE + PIXEL_GAP));
-		const posY = Math.floor(y / (PIXEL_SIZE + PIXEL_GAP));
+		const rect = ref.current.getBoundingClientRect();
+		const posX = Math.floor(((e.touches[0].clientX - rect.left) / rect.width) * DEFAULT_X);
+		const posY = Math.floor(((e.touches[0].clientY - rect.top) / rect.height) * DEFAULT_Y);
 
 		if (posX >= 0 && posX < DEFAULT_X && posY >= 0 && posY < DEFAULT_Y) {
-			const id = posY * DEFAULT_X + posX;
-
-			dispatch(setAndSendPixel(id));
+			dispatch(setAndSendPixel(posY * DEFAULT_X + posX));
 		}
 	};
 

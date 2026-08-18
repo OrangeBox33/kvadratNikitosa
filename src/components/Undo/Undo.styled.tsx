@@ -1,19 +1,22 @@
 import styled from 'styled-components';
 
 export const StyledContainer = styled.button`
-	border: none;
-	outline: none;
+	flex: none;
 	display: flex;
-	height: 44px;
-	width: 44px;
+	height: var(--control-size);
+	width: var(--control-size);
 	justify-content: center;
 	align-items: center;
-	background-color: #313134;
-	border: 2px solid #1c1c1c;
-	&:hover {
-		cursor: pointer;
+	padding: 0;
+	background-color: var(--bg-control);
+	border: var(--border-width) solid var(--border-color);
+	cursor: pointer;
+
+	&:disabled {
+		cursor: default;
+		opacity: 0.5;
 	}
-	&:active {
+	&:active:not(:disabled) {
 		transform: scale(0.95);
 	}
 `;

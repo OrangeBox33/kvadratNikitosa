@@ -1,26 +1,20 @@
 import React, { FC } from 'react';
 import { Grid } from '../../Grid';
-import { Palette1, Palette2 } from '../../Palette';
-import { Undo } from '../../Undo';
-import { StyledFlexMobile, StyledMainContainer, StyledPaletteUndo, StyledWrapper } from './styled';
-import { BrushType } from '../../BrushType';
-import { Chat } from '../../Chat/Mobile';
+import { Toolbar } from '../../Toolbar';
+import { Chat } from '../../Chat';
+import { DeviceType } from '../../../utils/types';
+import { PALETTE2, PALETTE_COLUMNS_MOBILE } from '../../../utils/constants';
+import { StyledBoardArea, StyledMainContainer, StyledMainPalette } from './styled';
 
 export const MainMobile: FC = () => {
 	return (
 		<StyledMainContainer>
-			<Chat />
-			<StyledFlexMobile>
-				<Grid deviceType={1} />
-				<StyledWrapper>
-					<StyledPaletteUndo>
-						<Undo />
-						<BrushType />
-						<Palette1 />
-					</StyledPaletteUndo>
-					<Palette2 />
-				</StyledWrapper>
-			</StyledFlexMobile>
+			<Chat collapsible />
+			<StyledBoardArea>
+				<Grid deviceType={DeviceType.MOBILE} />
+			</StyledBoardArea>
+			<Toolbar />
+			<StyledMainPalette colors={PALETTE2} columns={PALETTE_COLUMNS_MOBILE} />
 		</StyledMainContainer>
 	);
 };

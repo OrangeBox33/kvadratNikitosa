@@ -1,6 +1,48 @@
+/* ---------------------------------------------------------------------------
+   Базовый слой. Три правила здесь снимают необходимость подгонять размеры
+   руками в компонентах, поэтому их важно не потерять:
+   1) box-sizing: border-box — бордер входит в заданную ширину/высоту.
+      Без него каждый `border: 2px` приходилось вычитать вручную.
+   2) высота 100% по цепочке html → body → #root — иначе flex-раскладки
+      внутри не за что зацепиться и все высоты приходится считать в vh.
+   3) --* токены ниже — единственный источник цветов и размеров контролов.
+--------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+:root {
+	/* Цвета */
+	--bg-page: #5b5d63;
+	--bg-panel: #535459;
+	--bg-field: #c0c2cb;
+	--bg-control: #313134;
+	--border-color: #1c1c1c;
+	--border-active: #808080;
+	--text-on-dark: #d9d9d9;
+	--text-muted: #545454;
+
+	/* Метрики. Всё, что раньше было россыпью 40/44/26/2px по файлам. */
+	--border-width: 2px;
+	--control-size: 44px;
+	--swatch-height: 28px;
+	--bar-height: 30px;
+	--icon-size: 26px;
+	--gap: 6px;
+	--pad: 6px;
+}
+
+html,
+body,
+#root {
+	height: 100%;
+}
+
 html,
 body {
-	height: 100%;
 	/* страница сама не скроллится → строка адреса не прыгает, нет pull-to-refresh и bounce */
 	overflow: hidden;
 	overscroll-behavior: none;
@@ -12,7 +54,18 @@ body {
 		'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
-	background-color: #c0c2cb;
+	background-color: var(--bg-field);
+	/* при рисовании мышью не выделяется текст, при тапе не мигает серая подсветка */
+	user-select: none;
+	-webkit-user-select: none;
+	-webkit-tap-highlight-color: transparent;
+}
+
+/* в полях ввода выделение, наоборот, нужно */
+input,
+textarea {
+	user-select: text;
+	-webkit-user-select: text;
 }
 
 span,
@@ -21,10 +74,6 @@ input,
 textarea {
 	font-family: 'PixelFont';
 }
-
-/* code {
-	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
-} */
 
 @font-face {
 	font-family: 'PixelFont';

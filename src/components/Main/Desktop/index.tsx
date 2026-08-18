@@ -1,36 +1,33 @@
 import React, { FC } from 'react';
 import { Grid } from '../../Grid';
-import { Palette1, Palette2 } from '../../Palette';
+import { Palette } from '../../Palette';
+import { Toolbar } from '../../Toolbar';
+import { Chat } from '../../Chat';
+import { DeviceType } from '../../../utils/types';
+import { PALETTE2, PALETTE_COLUMNS_DESKTOP } from '../../../utils/constants';
 import {
-	StyledGrid,
+	StyledBoardColumn,
+	StyledChatColumn,
 	StyledMainContainer,
-	StyledPalette,
-	StyledPaletteUndoDesktop,
-	StyledWrapper,
+	StyledStage,
+	StyledTools,
 } from './styled';
-import { Undo } from '../../Undo';
-import { BrushType } from '../../BrushType';
-import { Chat } from '../../Chat/Desktop';
 
 export const MainDesktop: FC = () => {
 	return (
 		<StyledMainContainer>
-			<div>
-				<StyledGrid>
-					<Grid deviceType={0} />
+			<StyledStage>
+				<StyledBoardColumn>
+					<Grid deviceType={DeviceType.DESKTOP} />
+					<StyledTools>
+						<Toolbar />
+						<Palette colors={PALETTE2} columns={PALETTE_COLUMNS_DESKTOP} />
+					</StyledTools>
+				</StyledBoardColumn>
+				<StyledChatColumn>
 					<Chat />
-				</StyledGrid>
-				<StyledWrapper>
-					<StyledPaletteUndoDesktop>
-						<Undo />
-						<BrushType />
-						<StyledPalette>
-							<Palette1 />
-						</StyledPalette>
-					</StyledPaletteUndoDesktop>
-					<Palette2 />
-				</StyledWrapper>
-			</div>
+				</StyledChatColumn>
+			</StyledStage>
 		</StyledMainContainer>
 	);
 };

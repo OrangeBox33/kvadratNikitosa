@@ -1,31 +1,22 @@
 import React, { FC } from 'react';
 import { Grid } from '../../Grid';
-import { Palette1 } from '../../Palette';
-import { Undo } from '../../Undo';
-import {
-	StyledMainContainer,
-	StyledGrid,
-	StyledPalette,
-	StyledUndo,
-	StyledPaletteUndo,
-} from './styled';
-import { BrushType } from '../../BrushType';
+import { Toolbar } from '../../Toolbar';
+import { Chat } from '../../Chat';
+import { DeviceType } from '../../../utils/types';
+import { PALETTE2, PALETTE_COLUMNS_DESKTOP } from '../../../utils/constants';
+import { StyledBoardArea, StyledMainContainer, StyledMainPalette, StyledSideColumn } from './styled';
 
 export const MainMobileRotate: FC = () => {
 	return (
 		<StyledMainContainer>
-			<StyledPaletteUndo>
-				<StyledUndo>
-					<Undo />
-					<BrushType />
-				</StyledUndo>
-				<StyledPalette>
-					<Palette1 />
-				</StyledPalette>
-			</StyledPaletteUndo>
-			<StyledGrid>
-				<Grid deviceType={2} />
-			</StyledGrid>
+			<StyledSideColumn>
+				<Chat />
+				<Toolbar />
+				<StyledMainPalette colors={PALETTE2} columns={PALETTE_COLUMNS_DESKTOP} />
+			</StyledSideColumn>
+			<StyledBoardArea>
+				<Grid deviceType={DeviceType.MOBILE_ROTATE} />
+			</StyledBoardArea>
 		</StyledMainContainer>
 	);
 };

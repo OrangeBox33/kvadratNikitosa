@@ -15,14 +15,16 @@ export const BrushType: FC = () => {
 	return (
 		<StyledFlex>
 			<StyledContainer
+				type="button"
 				onClick={handleClick(EBrushType.PENCIL)}
-				isActive={brushType === EBrushType.PENCIL}
+				$isActive={brushType === EBrushType.PENCIL}
 			>
 				<span>1x1</span>
 			</StyledContainer>
 			<StyledContainer
+				type="button"
 				onClick={handleClick(EBrushType.BRUSH)}
-				isActive={brushType === EBrushType.BRUSH}
+				$isActive={brushType === EBrushType.BRUSH}
 			>
 				<span>3x3</span>
 			</StyledContainer>

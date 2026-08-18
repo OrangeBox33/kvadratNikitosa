@@ -11,9 +11,8 @@ interface IProps {
 export const PalettePixel: FC<IProps> = ({ color, isActive, handleClick }) => {
 	return (
 		<StyledPalettePixel
-			// @ts-ignore
-			color={PALETTE_DICTIONARY[color] || color}
-			isActive={isActive}
+			$color={PALETTE_DICTIONARY[color as keyof typeof PALETTE_DICTIONARY] || color}
+			$isActive={isActive}
 			onClick={() => handleClick(color)}
 		/>
 	);
