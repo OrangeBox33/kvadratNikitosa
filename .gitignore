@@ -2,6 +2,9 @@
 /dist
 /server/dist
 
+# промежуточная посылка, которую собирает deploy.sh
+/.deploy
+
 
 # dependencies
 /node_modules

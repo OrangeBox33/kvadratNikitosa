@@ -7,4 +7,8 @@ export enum EMessageTypes {
 	SEND_TO_CHAT = 'sendToChat',
 	WIFI = 'wifi',
 	OTA = 'ota',
+	// Калибровка палитры: браузер шлёт подобранную пару цветов,
+	// сервер копит их в своей палитре и рассылает её обратно.
+	SAVE_COLOR = 'saveColor',
+	GET_PALETTE = 'getPalette',
 }

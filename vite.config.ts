@@ -22,6 +22,8 @@ export default defineConfig({
 							req.url = '/wifi.html';
 						} else if (req.url.startsWith('/update')) {
 							req.url = '/update.html';
+						} else if (req.url.startsWith('/calibrate')) {
+							req.url = '/calibrate.html';
 						}
 					}
 					next();
@@ -40,6 +42,7 @@ export default defineConfig({
 				index: resolve(__dirname, 'index.html'),
 				wifi: resolve(__dirname, 'wifi.html'),
 				update: resolve(__dirname, 'update.html'),
+				calibrate: resolve(__dirname, 'calibrate.html'),
 			},
 		},
 	},

@@ -1,6 +1,6 @@
 import { socket } from '../socket/socket';
 import { BRUSH } from '../utils/constants';
-import { Id, ChatMessage } from '../utils/types';
+import { Color, Id, ChatMessage, Pixel } from '../utils/types';
 import { needPaintPixels } from '../utils/utils';
 import { pushHistory, setPixels, popHistory } from './slice';
 import { AppThunk } from './store';
@@ -55,4 +55,25 @@ export const sendMessage =
 			chatMessage: { username, text },
 		});
 		socket.send(data);
+	};
+
+// Ниже — только для страницы калибровки /calibrate.
+// Историю отмены намеренно не трогаем: это не рисование, а подбор цвета,
+// и панель при этом затирается целиком — так и задумано.
+export const sendCalibrationPixels =
+	(pixels: Pixel[]): AppThunk =>
+	async () => {
+		if (socket.readyState === socket.OPEN) {
+			socket.send(JSON.stringify({ type: EMessageTypes.DRAW, pixels }));
+		}
+	};
+
+// panel — цвет, который уходит в диоды, screen — как его рисовать на экране.
+// Сервер копит эти пары в своей палитре и присылает её обратно всем.
+export const saveCalibratedColor =
+	({ panel, screen }: { panel: Color; screen: Color }): AppThunk =>
+	async () => {
+		if (socket.readyState === socket.OPEN) {
+			socket.send(JSON.stringify({ type: EMessageTypes.SAVE_COLOR, panel, screen }));
+		}
 	};

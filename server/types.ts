@@ -33,6 +33,11 @@ export type TChatMessage = ChatMessage;
 
 export type TChat = Chat;
 
+// Палитра калибровки: ключ — панельный цвет (тот, что уходит в диоды),
+// значение — цвет, каким его надо рисовать на экране.
+// Та же семантика, что у PALETTE_DICTIONARY в src/utils/constants.ts (ключ -> значение).
+export type TPalette = Record<string, string>;
+
 export type TDataFromClient = {
 	type: EMessageTypes;
 	pixels: TPixel[];
@@ -40,4 +45,6 @@ export type TDataFromClient = {
 	ssid: string;
 	password: string;
 	pathname: string;
+	panel: string;
+	screen: string;
 };

@@ -18,6 +18,9 @@ export interface MainState {
 	history: History;
 	pendingNewStroke: boolean;
 	chat: Chat;
+	// Подобранные на /calibrate пары «панельный цвет -> цвет на экране».
+	// Живёт на сервере (server/palette.json), сюда приходит целиком.
+	palette: Record<string, string>;
 }
 
 const initialState: MainState = {
@@ -27,6 +30,7 @@ const initialState: MainState = {
 	history: [],
 	pendingNewStroke: true,
 	chat: [],
+	palette: {},
 };
 
 // export const getChat =
@@ -88,6 +92,10 @@ export const mainSlice = createSlice({
 			state.chat = action.payload;
 		},
 
+		setPalette: (state, action: PayloadAction<Record<string, string>>) => {
+			state.palette = action.payload;
+		},
+
 		addMessage: (state, action: PayloadAction<ChatMessage>) => {
 			if (state.chat.length > CHAT_SIZE) {
 				state.chat.shift();
@@ -104,6 +112,7 @@ export const selectPixelColor = (id: number) => (state: MainState) => state.grid
 export const selectEmptyHistory = (state: MainState) => state.history.length === 0;
 export const selectBrushType = (state: MainState) => state.brushType;
 export const selectChat = (state: MainState) => state.chat;
+export const selectPalette = (state: MainState) => state.palette;
 
 export const {
 	setPixels,
@@ -115,6 +124,7 @@ export const {
 	changeBrushType,
 	setChat,
 	addMessage,
+	setPalette,
 } = mainSlice.actions;
 
 export const mainReducer = mainSlice.reducer;
